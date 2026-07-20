@@ -22,6 +22,8 @@ func TestExitCodeContracts(t *testing.T) {
 		{"help", []string{"--help"}, ExitOK},
 		{"version", []string{"--version"}, ExitOK},
 		{"version args", []string{"version", "extra"}, ExitUsage},
+		{"service missing subcommand", []string{"service"}, ExitUsage},
+		{"service invalid name", []string{"service", "status", "--name", "../bad"}, ExitUsage},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {

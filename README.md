@@ -21,6 +21,13 @@ The initial release targets Windows 11 x86-64 and Ubuntu x86-64 on WSL2.
 
 ## Install
 
+To use the Windows OpenSSH Agent from WSL, follow the dedicated
+[OpenSSH Agent installation manual](docs/openssh-agent.md). It provides a
+separate one-line installer that installs Pipeferry, registers and starts the
+systemd user service, and prepares the shell environment files.
+
+For protocol-independent use, run the generic installer below.
+
 Run this one-liner in WSL2:
 
 ```bash
@@ -42,30 +49,10 @@ Run this one-liner in WSL2:
 curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/uninstall.sh | sh
 ```
 
-The uninstaller removes both binaries and the recorded Windows executable
-setting. It also removes the Windows user `PATH` entry created by Pipeferry
-versions before `v0.1.1`.
-
-## Use Windows OpenSSH Agent from WSL
-
-Make both binaries available from WSL, then start the listener:
-
-```bash
-pipeferry unix-listen \
-  --socket "${XDG_RUNTIME_DIR:-$HOME/.local/run}/pipeferry/ssh-agent.sock" \
-  -- \
-  pipeferry.exe npipe-connect \
-    --pipe openssh-ssh-agent \
-    --connect-timeout 5s
-```
-
-In another shell:
-
-```bash
-export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-$HOME/.local/run}/pipeferry/ssh-agent.sock"
-ssh-add -l
-ssh-add -L
-```
+The common uninstaller first stops and removes every Pipeferry-managed systemd
+user service. It then removes integration environment files, both binaries, and
+the recorded Windows executable setting. It also removes the Windows user
+`PATH` entry created by Pipeferry versions before `v0.1.1`.
 
 The child command is an argument array after `--`. It is not parsed by a shell.
 A full pipe path is also accepted:
@@ -124,8 +111,8 @@ the initial release does not promise cross-platform half-close behavior.
 ### `status` (Linux)
 
 ```bash
-pipeferry status --socket "$SSH_AUTH_SOCK"
-pipeferry status --socket "$SSH_AUTH_SOCK" --json
+pipeferry status --socket "$XDG_RUNTIME_DIR/pipeferry/example.sock"
+pipeferry status --socket "$XDG_RUNTIME_DIR/pipeferry/example.sock" --json
 ```
 
 The result distinguishes a missing path, non-socket path, live socket, and stale
@@ -135,13 +122,12 @@ socket. `locked` reports whether another listener holds the path lock.
 
 ```bash
 pipeferry doctor --json -- \
-  pipeferry.exe npipe-connect --pipe openssh-ssh-agent
+  pipeferry.exe npipe-connect --pipe example-service
 ```
 
 Doctor checks the WSL kernel, interop handler, child executable, and the child's
 `--check` connection. Each check runs independently; any failure produces exit
-code 9. Add `--ssh-agent` to make a separate SSH Agent identities request through
-the bridge.
+code 9.
 
 ### `version`
 
@@ -152,6 +138,35 @@ pipeferry --version
 
 Release builds report the version, commit, build timestamp, operating system,
 and architecture.
+
+### systemd user service (Linux/WSL)
+
+Register a listener as a monitored, automatically restarted user service:
+
+```bash
+pipeferry service install \
+  --name example \
+  --socket-name example.sock \
+  -- \
+  pipeferry.exe npipe-connect \
+    --pipe example-service \
+    --connect-timeout 5s
+```
+
+The command enables and starts `pipeferry-example.service`, then prints the
+socket and journal command. It does not modify shell startup files or configure
+protocol-specific environment variables. Inspect or remove the service with:
+
+```bash
+pipeferry service status --name example
+pipeferry service status --name example --json
+pipeferry service uninstall --name example
+```
+
+Use `systemctl --user restart pipeferry-example.service` to restart it and
+`journalctl --user --unit pipeferry-example.service --follow` to follow logs.
+Re-running the same install is safe and restarts the service. A different
+configuration requires `--force`.
 
 ## Exit codes
 
@@ -164,7 +179,7 @@ and architecture.
 | 4 | Unix socket failure |
 | 5 | named-pipe connection failure |
 | 6 | transfer failure |
-| 7 | listener already running |
+| 7 | listener already running or conflicting service configuration |
 | 8 | connection or shutdown timeout |
 | 9 | diagnostic failure |
 
@@ -179,8 +194,8 @@ later connection.
 - Do not pass untrusted child commands or secrets in command arguments.
 - Do not combine `npipe-connect` standard error with standard output.
 - One Windows process is launched per Unix connection.
-- The initial release does not provide `ensure`, `PIPEFERRY_EXEC`, services,
-  auto-update, TCP, or connection multiplexing.
+- The initial release does not provide `ensure`, `PIPEFERRY_EXEC`, system-level
+  services, auto-update, TCP, or connection multiplexing.
 
 See [troubleshooting](docs/troubleshooting.md) for WSL interop, PATH, named-pipe,
 and stale-socket diagnostics. The normative initial requirements are in

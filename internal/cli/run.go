@@ -14,6 +14,9 @@ import (
 const usage = `Usage:
   pipeferry unix-listen [options] -- executable [arguments...]
   pipeferry npipe-connect --pipe NAME [options]
+  pipeferry service install [options] -- executable [arguments...]
+  pipeferry service status --name NAME [--json]
+  pipeferry service uninstall --name NAME
   pipeferry status [options]
   pipeferry doctor [options] -- executable [arguments...]
   pipeferry version
@@ -55,6 +58,11 @@ func run(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.
 			return exitError(ExitUsage, "unix-listen is supported only on linux")
 		}
 		return runUnixListen(ctx, args[1:], stderr)
+	case "service":
+		if runtime.GOOS != "linux" {
+			return exitError(ExitUsage, "service is supported only on linux")
+		}
+		return runService(ctx, args[1:], stdout, stderr)
 	case "status":
 		if runtime.GOOS != "linux" {
 			return exitError(ExitUsage, "status is supported only on linux")

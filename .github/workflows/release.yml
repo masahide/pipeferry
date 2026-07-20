@@ -71,7 +71,7 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Add installers
-        run: cp install.sh install.ps1 uninstall.sh uninstall.ps1 dist/
+        run: cp install.sh install-ssh-agent.sh install.ps1 uninstall.sh uninstall.ps1 dist/
       - uses: softprops/action-gh-release@v2
         with:
           files: dist/*

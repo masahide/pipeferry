@@ -5,6 +5,52 @@ REPOSITORY="${PIPEFERRY_REPOSITORY:-masahide/pipeferry}"
 INSTALL_DIR="${PIPEFERRY_INSTALL_DIR:-$HOME/.local/bin}"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry"
 BINARY="$INSTALL_DIR/pipeferry"
+SYSTEMD_USER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+
+services_changed=0
+for unit_file in "$SYSTEMD_USER_DIR"/pipeferry-*.service; do
+  if [ ! -f "$unit_file" ]; then
+    continue
+  fi
+  if ! grep -q '^# Pipeferry-SocketName=' "$unit_file"; then
+    echo "Skipping unmanaged unit: $unit_file" >&2
+    continue
+  fi
+
+  unit="$(basename "$unit_file")"
+  name="${unit#pipeferry-}"
+  name="${name%.service}"
+  removed=0
+
+  if [ -x "$BINARY" ]; then
+    if "$BINARY" service uninstall --name "$name"; then
+      removed=1
+    else
+      echo "pipeferry: normal service removal failed; attempting fallback removal for $unit" >&2
+    fi
+  fi
+
+  if [ "$removed" -eq 0 ]; then
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl --user disable --now "$unit" >/dev/null 2>&1 || true
+    fi
+    rm -f "$unit_file"
+    echo "Removed systemd user unit: $unit_file"
+  fi
+  services_changed=1
+done
+
+if [ "$services_changed" -eq 1 ] && command -v systemctl >/dev/null 2>&1; then
+  systemctl --user daemon-reload >/dev/null 2>&1 || true
+  systemctl --user reset-failed >/dev/null 2>&1 || true
+fi
+
+for shell_config in "$CONFIG_DIR/ssh-agent.sh" "$CONFIG_DIR/ssh-agent.fish"; do
+  if [ -f "$shell_config" ] || [ -L "$shell_config" ]; then
+    rm -f "$shell_config"
+    echo "Removed shell environment file: $shell_config"
+  fi
+done
 
 if [ -e "$BINARY" ] || [ -L "$BINARY" ]; then
   rm -f "$BINARY"

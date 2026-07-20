@@ -63,6 +63,7 @@ following stable asset names with SHA-256 checksum files:
 - `pipeferry-windows-amd64.zip`
 - `pipeferry-windows-amd64.zip.sha256`
 - `install.sh`
+- `install-ssh-agent.sh`
 - `install.ps1`
 - `uninstall.sh`
 - `uninstall.ps1`
