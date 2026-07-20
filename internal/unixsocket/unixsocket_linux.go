@@ -56,11 +56,8 @@ func Listen(path string, mode fs.FileMode) (*Listener, error) {
 		return nil, fmt.Errorf("socket mode must grant only owner permissions")
 	}
 	parent := filepath.Dir(path)
-	if err := os.MkdirAll(parent, 0o700); err != nil {
-		return nil, fmt.Errorf("create socket directory: %w", err)
-	}
-	if err := os.Chmod(parent, 0o700); err != nil {
-		return nil, fmt.Errorf("secure socket directory: %w", err)
+	if err := ensurePrivateDirectory(parent); err != nil {
+		return nil, err
 	}
 
 	result := &Listener{path: path, lockPath: path + ".lock"}
@@ -87,6 +84,33 @@ func Listen(path string, mode fs.FileMode) (*Listener, error) {
 	}
 	ok = true
 	return result, nil
+}
+
+func ensurePrivateDirectory(path string) error {
+	_, statErr := os.Lstat(path)
+	created := errors.Is(statErr, os.ErrNotExist)
+	if statErr != nil && !created {
+		return fmt.Errorf("inspect socket directory: %w", statErr)
+	}
+	if created {
+		if err := os.MkdirAll(path, 0o700); err != nil {
+			return fmt.Errorf("create socket directory: %w", err)
+		}
+	}
+	info, err := os.Lstat(path)
+	if err != nil {
+		return fmt.Errorf("inspect socket directory: %w", err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("socket parent path is not a directory")
+	}
+	if !ownedByUID(info, uint32(os.Geteuid())) {
+		return fmt.Errorf("socket directory is not owned by current user")
+	}
+	if info.Mode().Perm() != 0o700 {
+		return fmt.Errorf("socket directory mode must be 0700, got %04o", info.Mode().Perm())
+	}
+	return nil
 }
 
 func (l *Listener) acquire() error {

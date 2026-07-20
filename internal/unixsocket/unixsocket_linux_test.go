@@ -61,7 +61,11 @@ func TestListenModesLockAndCleanup(t *testing.T) {
 }
 
 func TestStaleSocketRecoveryAndRegularFileSafety(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "stale.sock")
+	parent := filepath.Join(t.TempDir(), "private")
+	if err := os.Mkdir(parent, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(parent, "stale.sock")
 	old, err := net.Listen("unix", path)
 	if err != nil {
 		t.Fatal(err)
@@ -95,6 +99,24 @@ func TestStaleSocketRecoveryAndRegularFileSafety(t *testing.T) {
 	info, err := os.Stat(directoryPath)
 	if err != nil || !info.IsDir() {
 		t.Fatalf("directory was modified: %v, %v", info, err)
+	}
+}
+
+func TestListenDoesNotChangeExistingParentPermissions(t *testing.T) {
+	parent := filepath.Join(t.TempDir(), "shared")
+	if err := os.Mkdir(parent, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(parent, "service.sock")
+	if _, err := Listen(path, 0o600); err == nil {
+		t.Fatal("listener accepted non-private parent directory")
+	}
+	info, err := os.Stat(parent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0o755 {
+		t.Fatalf("existing parent mode changed to %04o", info.Mode().Perm())
 	}
 }
 

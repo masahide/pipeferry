@@ -96,8 +96,10 @@ pipeferry unix-listen [options] -- executable [arguments...]
 | `--log-format FORMAT` | `text` | `text` or `json` |
 | `--log-file PATH` | standard error | Append listener logs to a file |
 
-Pipeferry creates the socket's parent directory with mode `0700`, uses a lock to
-prevent duplicate listeners, and removes only a stale Unix socket owned by the
+Pipeferry creates a missing socket parent directory with mode `0700` and
+requires an existing parent to already be owned by the current user with mode
+`0700`. It never changes permissions on an existing parent. A lock prevents
+duplicate listeners, and Pipeferry removes only a stale Unix socket owned by the
 current user. It will not delete a regular file or directory at the socket path.
 SIGINT and SIGTERM stop new accepts, cancel active children, wait up to the
 shutdown timeout, and remove the socket and lock.

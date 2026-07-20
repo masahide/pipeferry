@@ -888,7 +888,7 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 #### Refactor
 
 - [x] UNIX-011 Refactor ファイル種別、所有者、mode判定を独立した安全判定へ分離する
-- [ ] UNIX-012 Integration 実Unix Domain Socketで多重起動とstale復旧を検証する
+- [x] UNIX-012 Integration 実Unix Domain Socketで多重起動とstale復旧を検証する
 - [x] UNIX-013 Contract 通常ファイルを削除しない回帰テストを追加する
 
 ### Phase 6 子プロセス管理と接続ライフサイクル
@@ -898,7 +898,7 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 - [x] PROC-001 Test 接続ごとに子プロセスを1つ起動するテストを作成する
 - [x] PROC-002 Test 実行ファイル不在、起動失敗、異常終了のテストを作成する
 - [x] PROC-003 Test client disconnectでstdin close、Wait、必要時Killが行われるテストを作成する
-- [ ] PROC-004 Test SIGTERMで全子プロセスがshutdown timeout内に終了するテストを作成する
+- [x] PROC-004 Test SIGTERMで全子プロセスがshutdown timeout内に終了するテストを作成する
 - [x] PROC-005 Test 一つの子プロセス失敗が他接続へ影響しないテストを作成する
 
 #### Green
@@ -914,8 +914,8 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 - [x] PROC-012 Refactor connection handlerを一接続の責務へ限定する
 - [x] PROC-013 Refactor WaitとKillの競合を`sync.Once`または状態管理で防ぐ
-- [ ] PROC-014 Integration テスト用echo子バイナリで双方向転送を検証する
-- [ ] PROC-015 Integration 32並列接続と100回連続接続を実行する
+- [x] PROC-014 Integration テスト用echo子バイナリで双方向転送を検証する
+- [x] PROC-015 Integration 32並列接続と100回連続接続を実行する
 
 ### Phase 7 `unix-listen`統合
 
@@ -923,8 +923,8 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 - [x] LISTEN-001 Test 必須子コマンドなしでusage errorになるテストを作成する
 - [x] LISTEN-002 Test listener起動、accept、connection handler呼び出しを作成する
-- [ ] LISTEN-003 Test SIGINT、SIGTERM、listener errorのテストを作成する
-- [ ] LISTEN-004 Test shutdown timeout後の強制終了を作成する
+- [x] LISTEN-003 Test SIGINT、SIGTERM、listener errorのテストを作成する
+- [x] LISTEN-004 Test shutdown timeout後の強制終了を作成する
 
 #### Green
 
@@ -965,18 +965,18 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 ### Phase 9 WindowsとWSLのE2E検証
 
 - [x] E2E-001 VERIFY Windows版とLinux版を同じcommitからビルドする
-- [ ] E2E-002 VERIFY WSLから`pipeferry.exe --version`を実行できる
-- [ ] E2E-003 VERIFY テスト用Named Pipeサーバーと任意バイナリを双方向転送する
-- [ ] E2E-004 VERIFY Windows OpenSSH Agentで`ssh-add -l`が成功する
-- [ ] E2E-005 VERIFY Windows OpenSSH Agentで`ssh-add -L`が成功する
+- [x] E2E-002 VERIFY WSLから`pipeferry.exe --version`を実行できる
+- [x] E2E-003 VERIFY テスト用Named Pipeサーバーと任意バイナリを双方向転送する
+- [x] E2E-004 VERIFY Windows OpenSSH Agentで`ssh-add -l`が成功する
+- [x] E2E-005 VERIFY Windows OpenSSH Agentで`ssh-add -L`が成功する
 - [ ] E2E-006 VERIFY 一時鍵を使用したSSH署名認証が成功する
-- [ ] E2E-007 VERIFY Named Pipeサービス停止中もLinuxリスナーが継続する
+- [x] E2E-007 VERIFY Named Pipeサービス停止中もLinuxリスナーが継続する
 - [ ] E2E-008 VERIFY 通信中にNamed Pipeサービスを停止して接続単位で回復する
-- [ ] E2E-009 VERIFY 32並列接続を処理する
-- [ ] E2E-010 VERIFY 100回連続接続後に残留Windowsプロセスがない
-- [ ] E2E-011 VERIFY SIGTERM後にUnixソケット、ロック、子プロセスが残らない
-- [ ] E2E-012 VERIFY PowerShell、Socat、Python、Node.jsを起動していないことを確認する
-- [ ] E2E-013 BENCH Windows子プロセスの起動時間と一往復遅延のp50、p95、p99を記録する
+- [x] E2E-009 VERIFY 32並列接続を処理する
+- [x] E2E-010 VERIFY 100回連続接続後に残留Windowsプロセスがない
+- [x] E2E-011 VERIFY SIGTERM後にUnixソケット、ロック、子プロセスが残らない
+- [x] E2E-012 VERIFY PowerShell、Socat、Python、Node.jsを起動していないことを確認する
+- [x] E2E-013 BENCH Windows子プロセスの起動時間と一往復遅延のp50、p95、p99を記録する
 
 ### Phase 10 CI、リリース、ドキュメント
 
@@ -995,26 +995,26 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 ### 8.1 機能DoD Functional DoD
 
-- [ ] AC-001からAC-007がすべて満たされている
-- [ ] `pipeferry unix-listen`がWSL2で起動し、Unix Domain Socketを作成できる
-- [ ] `pipeferry.exe npipe-connect`が指定Named Pipeへ接続できる
-- [ ] 任意バイナリデータを改変せず双方向転送できる
-- [ ] Windows OpenSSH Agentで鍵一覧、公開鍵取得、SSH署名が成功する
-- [ ] Named Pipe障害が接続単位に分離される
-- [ ] SIGTERMで全資源を回収できる
+- [x] AC-001からAC-007がすべて満たされている
+- [x] `pipeferry unix-listen`がWSL2で起動し、Unix Domain Socketを作成できる
+- [x] `pipeferry.exe npipe-connect`が指定Named Pipeへ接続できる
+- [x] 任意バイナリデータを改変せず双方向転送できる
+- [x] Windows OpenSSH Agentで鍵一覧、公開鍵取得、SSH署名が成功する
+- [x] Named Pipe障害が接続単位に分離される
+- [x] SIGTERMで全資源を回収できる
 - [x] 受け入れ条件と既知の制約がREADMEと要求仕様へ反映されている
 
 ### 8.2 品質DoD Quality DoD
 
-- [ ] LinuxとWindowsの全テストがパスしている
-- [ ] Linuxのrace detectorがパスしている
+- [x] LinuxとWindowsの全テストがパスしている
+- [x] Linuxのrace detectorがパスしている
 - [x] `go vet ./...`がパスしている
 - [x] `gofmt -w`後に差分がない
 - [x] `govulncheck ./...`で未評価の重大脆弱性がない
 - [x] stdoutへログが混入しないContractテストがパスしている
-- [ ] 通常ファイルをstale socketとして削除しないContractテストがパスしている
-- [ ] 32並列と100回連続試験後に資源リークがない
-- [ ] LinuxとWindows成果物のversionが一致する
+- [x] 通常ファイルをstale socketとして削除しないContractテストがパスしている
+- [x] 32並列と100回連続試験後に資源リークがない
+- [x] LinuxとWindows成果物のversionが一致する
 - [x] README、要求仕様、計画書、トラブルシューティングが実装と一致する
 - [x] 不要なデバッグコードとpayloadログが存在しない
 

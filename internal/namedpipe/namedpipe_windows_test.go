@@ -5,6 +5,7 @@ package namedpipe
 import (
 	"bytes"
 	"context"
+	"flag"
 	"io"
 	"net"
 	"os"
@@ -13,6 +14,36 @@ import (
 
 	"github.com/Microsoft/go-winio"
 )
+
+var e2ePipeName = flag.String("pipeferry-e2e-pipe", "", "serve an E2E echo pipe with this name")
+var e2ePayloadSize = flag.Int("pipeferry-e2e-size", 0, "number of bytes to echo in E2E helper mode")
+
+func TestNamedPipeE2EServer(t *testing.T) {
+	if *e2ePipeName == "" || *e2ePayloadSize <= 0 {
+		t.Skip("E2E helper is not requested")
+	}
+	path, err := NormalizePath(*e2ePipeName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	listener, err := winio.ListenPipe(path, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	conn, err := listener.Accept()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	payload := make([]byte, *e2ePayloadSize)
+	if _, err := io.ReadFull(conn, payload); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := conn.Write(payload); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestSystemDialerIntegration(t *testing.T) {
 	path := `\\.\pipe\pipeferry-test-` + time.Now().Format("150405.000000000")

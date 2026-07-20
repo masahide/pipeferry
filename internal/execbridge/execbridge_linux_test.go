@@ -9,7 +9,9 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"path/filepath"
 	"sync"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -135,6 +137,56 @@ func TestServeCancellationAndFailureIsolation(t *testing.T) {
 	if result := <-good; result.Err != nil {
 		t.Fatalf("failed connection affected good connection: %v", result.Err)
 	}
+}
+
+func TestServeCancellationReapsStartedChild(t *testing.T) {
+	client, bridge := net.Pipe()
+	defer client.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	marker := filepath.Join(t.TempDir(), "child.pid")
+	done := make(chan Result, 1)
+	go func() {
+		done <- Serve(ctx, bridge, Config{
+			Executable: "/bin/sh",
+			Args: []string{
+				"-c", `echo "$$" > "$1"; sleep 10`, "pipeferry-test", marker,
+			},
+			ShutdownTimeout: time.Second,
+		}, SystemProcessFactory{})
+	}()
+	waitForFile(t, marker, time.Second)
+	started := time.Now()
+	cancel()
+	result := <-done
+	if result.ChildPID == 0 {
+		t.Fatalf("child was not started: %+v", result)
+	}
+	if elapsed := time.Since(started); elapsed >= time.Second {
+		t.Fatalf("cancellation took %v, want less than shutdown timeout", elapsed)
+	}
+	if err := processExists(result.ChildPID); err == nil {
+		t.Fatalf("child process %d remains after cancellation", result.ChildPID)
+	}
+}
+
+func waitForFile(t *testing.T, path string, timeout time.Duration) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if _, err := os.Stat(path); err == nil {
+			return
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	t.Fatalf("file did not appear: %s", path)
+}
+
+func processExists(pid int) error {
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		return err
+	}
+	return process.Signal(syscall.Signal(0))
 }
 
 func TestServeThirtyTwoConcurrentAndOneHundredSequential(t *testing.T) {

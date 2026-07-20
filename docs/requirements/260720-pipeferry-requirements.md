@@ -25,10 +25,12 @@ The child command is an argv array after `--`; it is never evaluated by a shell.
 `ensure`, `--exec`, and `PIPEFERRY_EXEC` are outside the initial release scope.
 
 `unix-listen` defaults to a private socket below `$XDG_RUNTIME_DIR/pipeferry`, or
-`$HOME/.local/run/pipeferry` when XDG_RUNTIME_DIR is unavailable. Its parent
-directory is mode `0700` and the socket defaults to `0600`. A lock file prevents
-two listeners from managing the same path. Only a stale Unix socket owned by the
-current user may be removed; regular files and directories are never removed.
+`$HOME/.local/run/pipeferry` when XDG_RUNTIME_DIR is unavailable. A missing
+parent is created with mode `0700`; an existing parent must already be owned by
+the current user with mode `0700` and is never chmodded. The socket defaults to
+`0600`. A lock file prevents two listeners from managing the same path. Only a
+stale Unix socket owned by the current user may be removed; regular files and
+directories are never removed.
 
 `npipe-connect` accepts a short name such as `openssh-ssh-agent` or a full path
 such as `\\.\pipe\openssh-ssh-agent`. It waits up to five seconds by default.
