@@ -35,6 +35,17 @@ Windows installer through PowerShell, verifies the Windows archive, installs
 `PATH`. Start a new Windows terminal after installation to use the updated
 `PATH`.
 
+## Uninstall
+
+Run this one-liner in WSL2:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/uninstall.sh | sh
+```
+
+The uninstaller removes both the Linux and Windows binaries and removes the
+Windows installation directory from the Windows user `PATH`.
+
 ## Use Windows OpenSSH Agent from WSL
 
 Make both binaries available from WSL, then start the listener:

@@ -64,6 +64,8 @@ following stable asset names with SHA-256 checksum files:
 - `pipeferry-windows-amd64.zip.sha256`
 - `install.sh`
 - `install.ps1`
+- `uninstall.sh`
+- `uninstall.ps1`
 
 The stable archive names are part of the installer contract. Do not rename them
 without updating both installers.

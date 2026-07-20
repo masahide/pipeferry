@@ -21,6 +21,7 @@ jobs:
       - run: go vet ./...
       - run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/pipeferry ./cmd/pipeferry
       - run: sh -n install.sh
+      - run: sh -n uninstall.sh
 
   windows:
     runs-on: windows-latest
@@ -36,6 +37,7 @@ jobs:
       - shell: powershell
         run: |
           [void][scriptblock]::Create((Get-Content -Raw ./install.ps1))
+          [void][scriptblock]::Create((Get-Content -Raw ./uninstall.ps1))
 
   cross-build:
     runs-on: ubuntu-latest
