@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |---|---|
 | 計画書 | Pipeferry初期実装計画 |
-| 計画書パス | `docs/plans/260720-s01-pipeferry-initial-implementation.md` |
+| 計画書パス | `doc/260720-s01-pipeferry-initial-implementation.md` |
 | 要求仕様 | `docs/requirements/260720-pipeferry-requirements.md` |
 | 対象リポジトリ | `masahide/pipeferry` |
 | 作成日 | 2026-07-20 Asia Tokyo |
@@ -787,133 +787,133 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 ### Phase 1 設計とリポジトリ初期化
 
-- [ ] PLAN-001 要求仕様を`docs/requirements/260720-pipeferry-requirements.md`へ配置し、本文書から参照できる状態にする
-- [ ] PLAN-002 CLI契約を確定する。子コマンドは`--`以降のargv配列とし、シェル文字列を使用しない
-- [ ] PLAN-003 `ensure`と`PIPEFERRY_EXEC`を初期リリース非スコープへ移した差分を要求仕様へ反映する
-- [ ] PLAN-004 終了コード、EOF、broken pipe、shutdown timeoutの契約を要求仕様とREADMEへ反映する
-- [ ] PLAN-005 Mermaidのクラス図、シーケンス図、状態遷移図を確定する
-- [ ] PLAN-006 `go mod init github.com/masahide/pipeferry`を実行する
-- [ ] PLAN-007 `cmd/pipeferry`と`internal`の初期ディレクトリを作成する
-- [ ] PLAN-008 `go-winio`依存を追加し、`go mod tidy`を実行する
-- [ ] PLAN-009 Makefileまたは`Taskfile`を導入せず、初期はGoコマンドと小さなシェルスクリプトだけにする
-- [ ] PLAN-010 CIの最小構成としてLinuxとWindowsの`go test`、`go vet`、ビルドを追加する
+- [x] PLAN-001 要求仕様を`docs/requirements/260720-pipeferry-requirements.md`へ配置し、本文書から参照できる状態にする
+- [x] PLAN-002 CLI契約を確定する。子コマンドは`--`以降のargv配列とし、シェル文字列を使用しない
+- [x] PLAN-003 `ensure`と`PIPEFERRY_EXEC`を初期リリース非スコープへ移した差分を要求仕様へ反映する
+- [x] PLAN-004 終了コード、EOF、broken pipe、shutdown timeoutの契約を要求仕様とREADMEへ反映する
+- [x] PLAN-005 Mermaidのクラス図、シーケンス図、状態遷移図を確定する
+- [x] PLAN-006 `go mod init github.com/masahide/pipeferry`を実行する
+- [x] PLAN-007 `cmd/pipeferry`と`internal`の初期ディレクトリを作成する
+- [x] PLAN-008 `go-winio`依存を追加し、`go mod tidy`を実行する
+- [x] PLAN-009 Makefileまたは`Taskfile`を導入せず、初期はGoコマンドと小さなシェルスクリプトだけにする
+- [x] PLAN-010 CIの最小構成としてLinuxとWindowsの`go test`、`go vet`、ビルドを追加する
 
 ### Phase 2 CLI基盤とビルド情報
 
 #### Red
 
-- [ ] CLI-001 Test 未指定コマンド、未知コマンド、`--help`、`--version`の期待終了コードを作成する
-- [ ] CLI-002 Test OS非対応サブコマンドのエラー契約を作成する
-- [ ] CLI-003 Test duration、file mode、log level、log formatのバリデーションを作成する
+- [x] CLI-001 Test 未指定コマンド、未知コマンド、`--help`、`--version`の期待終了コードを作成する
+- [x] CLI-002 Test OS非対応サブコマンドのエラー契約を作成する
+- [x] CLI-003 Test duration、file mode、log level、log formatのバリデーションを作成する
 
 #### Green
 
-- [ ] CLI-004 Impl `cmd/pipeferry/main.go`を薄いエントリーポイントとして作成する
-- [ ] CLI-005 Impl `internal/cli`へサブコマンドディスパッチと終了コード変換を実装する
-- [ ] CLI-006 Impl `internal/buildinfo`へversion、commit、build date、GOOS、GOARCHを実装する
-- [ ] CLI-007 Impl `version`と`--version`をLinuxとWindowsで動作させる
+- [x] CLI-004 Impl `cmd/pipeferry/main.go`を薄いエントリーポイントとして作成する
+- [x] CLI-005 Impl `internal/cli`へサブコマンドディスパッチと終了コード変換を実装する
+- [x] CLI-006 Impl `internal/buildinfo`へversion、commit、build date、GOOS、GOARCHを実装する
+- [x] CLI-007 Impl `version`と`--version`をLinuxとWindowsで動作させる
 
 #### Refactor
 
-- [ ] CLI-008 Refactor パースエラーと実行時エラーを型で分離する
-- [ ] CLI-009 Refactor stdout、stderr、転送データWriterを依存注入し、テストで分離できるようにする
-- [ ] CLI-010 Contract CLI終了コードの表形式テストを追加する
+- [x] CLI-008 Refactor パースエラーと実行時エラーを型で分離する
+- [x] CLI-009 Refactor stdout、stderr、転送データWriterを依存注入し、テストで分離できるようにする
+- [x] CLI-010 Contract CLI終了コードの表形式テストを追加する
 
 ### Phase 3 OS非依存の双方向コピー
 
 #### Red
 
-- [ ] COPY-001 Test 両方向のバイト列が改変されないテストを作成する
-- [ ] COPY-002 Test 部分読み込み、部分書き込み、0バイト、1MiBデータを作成する
-- [ ] COPY-003 Test 一方向EOFで反対方向が終了するテストを作成する
-- [ ] COPY-004 Test 読み書きエラーとcontext cancellationのテストを作成する
-- [ ] COPY-005 Test コピー終了後にゴルーチンが残らないテストを作成する
+- [x] COPY-001 Test 両方向のバイト列が改変されないテストを作成する
+- [x] COPY-002 Test 部分読み込み、部分書き込み、0バイト、1MiBデータを作成する
+- [x] COPY-003 Test 一方向EOFで反対方向が終了するテストを作成する
+- [x] COPY-004 Test 読み書きエラーとcontext cancellationのテストを作成する
+- [x] COPY-005 Test コピー終了後にゴルーチンが残らないテストを作成する
 
 #### Green
 
-- [ ] COPY-006 Impl `internal/streamcopy`へ`DuplexCopier`を最小実装する
-- [ ] COPY-007 Impl コピー結果へ双方向バイト数、終了理由、エラーを記録する
-- [ ] COPY-008 Impl close関数を依存注入し、片方向終了時に接続全体を解除できるようにする
+- [x] COPY-006 Impl `internal/streamcopy`へ`DuplexCopier`を最小実装する
+- [x] COPY-007 Impl コピー結果へ双方向バイト数、終了理由、エラーを記録する
+- [x] COPY-008 Impl close関数を依存注入し、片方向終了時に接続全体を解除できるようにする
 
 #### Refactor
 
-- [ ] COPY-009 Refactor 正常EOFと異常エラーの分類を共通関数へ集約する
-- [ ] COPY-010 Refactor すべての終了経路で一度だけcloseするよう`sync.Once`を適用する
-- [ ] COPY-011 Contract stdoutへログを混入できないAPI境界をテストする
+- [x] COPY-009 Refactor 正常EOFと異常エラーの分類を共通関数へ集約する
+- [x] COPY-010 Refactor すべての終了経路で一度だけcloseするよう`sync.Once`を適用する
+- [x] COPY-011 Contract stdoutへログを混入できないAPI境界をテストする
 
 ### Phase 4 Windows Named Pipeクライアント
 
 #### Red
 
-- [ ] WIN-001 Test `openssh-ssh-agent`と完全パスの正規化テストを作成する
-- [ ] WIN-002 Test `--pipe`未指定、timeout不正、未知オプションのテストを作成する
-- [ ] WIN-003 Test Named Pipe接続失敗とタイムアウトの終了コードを作成する
-- [ ] WIN-004 Test stdinからNamed Pipe、Named Pipeからstdoutのバイト完全一致テストを作成する
-- [ ] WIN-005 Test stderrへログを出してもstdoutが完全一致するテストを作成する
-- [ ] WIN-006 Test `--check`が接続後に転送せず終了するテストを作成する
+- [x] WIN-001 Test `openssh-ssh-agent`と完全パスの正規化テストを作成する
+- [x] WIN-002 Test `--pipe`未指定、timeout不正、未知オプションのテストを作成する
+- [x] WIN-003 Test Named Pipe接続失敗とタイムアウトの終了コードを作成する
+- [x] WIN-004 Test stdinからNamed Pipe、Named Pipeからstdoutのバイト完全一致テストを作成する
+- [x] WIN-005 Test stderrへログを出してもstdoutが完全一致するテストを作成する
+- [x] WIN-006 Test `--check`が接続後に転送せず終了するテストを作成する
 
 #### Green
 
-- [ ] WIN-007 Impl `internal/namedpipe.NormalizePath`を実装する
-- [ ] WIN-008 Impl `go-winio.DialPipeContext`相当のDialerラッパーを実装する
-- [ ] WIN-009 Impl `npipe-connect`コマンドを実装する
-- [ ] WIN-010 Impl stdin EOF、Named Pipe EOF、broken pipe時の終了処理を実装する
-- [ ] WIN-011 Impl 設定エラー、接続失敗、timeout、転送失敗を終了コードへ変換する
+- [x] WIN-007 Impl `internal/namedpipe.NormalizePath`を実装する
+- [x] WIN-008 Impl `go-winio.DialPipeContext`相当のDialerラッパーを実装する
+- [x] WIN-009 Impl `npipe-connect`コマンドを実装する
+- [x] WIN-010 Impl stdin EOF、Named Pipe EOF、broken pipe時の終了処理を実装する
+- [x] WIN-011 Impl 設定エラー、接続失敗、timeout、転送失敗を終了コードへ変換する
 
 #### Refactor
 
-- [ ] WIN-012 Refactor Dialerをinterface化しUnitテストと実Named Pipe統合テストを分離する
-- [ ] WIN-013 Refactor Windows固有エラーを`errors.Is`可能な内部エラーへ正規化する
-- [ ] WIN-014 Integration 実Named Pipe echoサーバーを用いたWindowsテストを追加する
-- [ ] WIN-015 Contract stdoutバイト完全一致テストをCIのWindowsジョブで実行する
+- [x] WIN-012 Refactor Dialerをinterface化しUnitテストと実Named Pipe統合テストを分離する
+- [x] WIN-013 Refactor Windows固有エラーを`errors.Is`可能な内部エラーへ正規化する
+- [x] WIN-014 Integration 実Named Pipe echoサーバーを用いたWindowsテストを追加する
+- [x] WIN-015 Contract stdoutバイト完全一致テストをCIのWindowsジョブで実行する
 
 ### Phase 5 Linux Unix Domain Socket管理
 
 #### Red
 
-- [ ] UNIX-001 Test XDG、HOME、明示指定のソケットパス優先順位を作成する
-- [ ] UNIX-002 Test 親ディレクトリ`0700`とソケット`0600`を作成する
-- [ ] UNIX-003 Test 稼働中ソケット、古いソケット、通常ファイル、ディレクトリの判定を作成する
-- [ ] UNIX-004 Test 自分以外が所有するソケットを削除しない安全契約を作成する
-- [ ] UNIX-005 Test flockによる多重起動拒否を作成する
+- [x] UNIX-001 Test XDG、HOME、明示指定のソケットパス優先順位を作成する
+- [x] UNIX-002 Test 親ディレクトリ`0700`とソケット`0600`を作成する
+- [x] UNIX-003 Test 稼働中ソケット、古いソケット、通常ファイル、ディレクトリの判定を作成する
+- [x] UNIX-004 Test 自分以外が所有するソケットを削除しない安全契約を作成する
+- [x] UNIX-005 Test flockによる多重起動拒否を作成する
 
 #### Green
 
-- [ ] UNIX-006 Impl `internal/unixsocket.ResolvePath`を実装する
-- [ ] UNIX-007 Impl 安全な親ディレクトリ作成とmode検証を実装する
-- [ ] UNIX-008 Impl stale socket判定と削除を実装する
-- [ ] UNIX-009 Impl socket path単位のロックファイルとflockを実装する
-- [ ] UNIX-010 Impl listener close後のソケットとロックファイルcleanupを実装する
+- [x] UNIX-006 Impl `internal/unixsocket.ResolvePath`を実装する
+- [x] UNIX-007 Impl 安全な親ディレクトリ作成とmode検証を実装する
+- [x] UNIX-008 Impl stale socket判定と削除を実装する
+- [x] UNIX-009 Impl socket path単位のロックファイルとflockを実装する
+- [x] UNIX-010 Impl listener close後のソケットとロックファイルcleanupを実装する
 
 #### Refactor
 
-- [ ] UNIX-011 Refactor ファイル種別、所有者、mode判定を独立した安全判定へ分離する
+- [x] UNIX-011 Refactor ファイル種別、所有者、mode判定を独立した安全判定へ分離する
 - [ ] UNIX-012 Integration 実Unix Domain Socketで多重起動とstale復旧を検証する
-- [ ] UNIX-013 Contract 通常ファイルを削除しない回帰テストを追加する
+- [x] UNIX-013 Contract 通常ファイルを削除しない回帰テストを追加する
 
 ### Phase 6 子プロセス管理と接続ライフサイクル
 
 #### Red
 
-- [ ] PROC-001 Test 接続ごとに子プロセスを1つ起動するテストを作成する
-- [ ] PROC-002 Test 実行ファイル不在、起動失敗、異常終了のテストを作成する
-- [ ] PROC-003 Test client disconnectでstdin close、Wait、必要時Killが行われるテストを作成する
+- [x] PROC-001 Test 接続ごとに子プロセスを1つ起動するテストを作成する
+- [x] PROC-002 Test 実行ファイル不在、起動失敗、異常終了のテストを作成する
+- [x] PROC-003 Test client disconnectでstdin close、Wait、必要時Killが行われるテストを作成する
 - [ ] PROC-004 Test SIGTERMで全子プロセスがshutdown timeout内に終了するテストを作成する
-- [ ] PROC-005 Test 一つの子プロセス失敗が他接続へ影響しないテストを作成する
+- [x] PROC-005 Test 一つの子プロセス失敗が他接続へ影響しないテストを作成する
 
 #### Green
 
-- [ ] PROC-006 Impl `internal/execbridge.ProcessFactory`を実装する
-- [ ] PROC-007 Impl child stdin、stdout、stderr、Wait、Killを一つのライフサイクルとして管理する
-- [ ] PROC-008 Impl stderrをLinux側loggerへ行単位またはサイズ制限付きで転送する
-- [ ] PROC-009 Impl 接続IDとPIDを付与した接続ログを実装する
-- [ ] PROC-010 Impl context cancellationとshutdown timeoutを実装する
-- [ ] PROC-011 Impl semaphoreで`max-connections`を制御する
+- [x] PROC-006 Impl `internal/execbridge.ProcessFactory`を実装する
+- [x] PROC-007 Impl child stdin、stdout、stderr、Wait、Killを一つのライフサイクルとして管理する
+- [x] PROC-008 Impl stderrをLinux側loggerへ行単位またはサイズ制限付きで転送する
+- [x] PROC-009 Impl 接続IDとPIDを付与した接続ログを実装する
+- [x] PROC-010 Impl context cancellationとshutdown timeoutを実装する
+- [x] PROC-011 Impl semaphoreで`max-connections`を制御する
 
 #### Refactor
 
-- [ ] PROC-012 Refactor connection handlerを一接続の責務へ限定する
-- [ ] PROC-013 Refactor WaitとKillの競合を`sync.Once`または状態管理で防ぐ
+- [x] PROC-012 Refactor connection handlerを一接続の責務へ限定する
+- [x] PROC-013 Refactor WaitとKillの競合を`sync.Once`または状態管理で防ぐ
 - [ ] PROC-014 Integration テスト用echo子バイナリで双方向転送を検証する
 - [ ] PROC-015 Integration 32並列接続と100回連続接続を実行する
 
@@ -921,50 +921,50 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 #### Red
 
-- [ ] LISTEN-001 Test 必須子コマンドなしでusage errorになるテストを作成する
-- [ ] LISTEN-002 Test listener起動、accept、connection handler呼び出しを作成する
+- [x] LISTEN-001 Test 必須子コマンドなしでusage errorになるテストを作成する
+- [x] LISTEN-002 Test listener起動、accept、connection handler呼び出しを作成する
 - [ ] LISTEN-003 Test SIGINT、SIGTERM、listener errorのテストを作成する
 - [ ] LISTEN-004 Test shutdown timeout後の強制終了を作成する
 
 #### Green
 
-- [ ] LISTEN-005 Impl `unix-listen`コマンドへUnixListener、InstanceLock、ConnectionManagerを統合する
-- [ ] LISTEN-006 Impl signal.NotifyContextによる停止を実装する
-- [ ] LISTEN-007 Impl 新規accept停止、接続cancel、Wait、cleanupの停止順序を実装する
-- [ ] LISTEN-008 Impl 起動時と終了時の構造化ログを実装する
+- [x] LISTEN-005 Impl `unix-listen`コマンドへUnixListener、InstanceLock、ConnectionManagerを統合する
+- [x] LISTEN-006 Impl signal.NotifyContextによる停止を実装する
+- [x] LISTEN-007 Impl 新規accept停止、接続cancel、Wait、cleanupの停止順序を実装する
+- [x] LISTEN-008 Impl 起動時と終了時の構造化ログを実装する
 
 #### Refactor
 
-- [ ] LISTEN-009 Refactor cleanupを冪等化する
-- [ ] LISTEN-010 Refactor 起動失敗途中でも作成済み資源を回収する
-- [ ] LISTEN-011 Integration Unix socketからecho子プロセスまでのE2Eテストを追加する
+- [x] LISTEN-009 Refactor cleanupを冪等化する
+- [x] LISTEN-010 Refactor 起動失敗途中でも作成済み資源を回収する
+- [x] LISTEN-011 Integration Unix socketからecho子プロセスまでのE2Eテストを追加する
 
 ### Phase 8 状態確認と診断
 
 #### Red
 
-- [ ] DIAG-001 Test `status`の不存在、稼働中、stale、通常ファイル判定を作成する
-- [ ] DIAG-002 Test `status --json`の契約を作成する
-- [ ] DIAG-003 Test `doctor`の各checkが独立して成功失敗を返すテストを作成する
-- [ ] DIAG-004 Test 一部診断失敗時に残りの診断を継続するテストを作成する
+- [x] DIAG-001 Test `status`の不存在、稼働中、stale、通常ファイル判定を作成する
+- [x] DIAG-002 Test `status --json`の契約を作成する
+- [x] DIAG-003 Test `doctor`の各checkが独立して成功失敗を返すテストを作成する
+- [x] DIAG-004 Test 一部診断失敗時に残りの診断を継続するテストを作成する
 
 #### Green
 
-- [ ] DIAG-005 Impl `status`コマンドを実装する
-- [ ] DIAG-006 Impl WSL判定、interop確認、子実行ファイル確認を実装する
-- [ ] DIAG-007 Impl Windows側`--check`呼び出しを実装する
-- [ ] DIAG-008 Impl `doctor --json`を実装する
-- [ ] DIAG-009 Impl `--ssh-agent`指定時だけSSH Agent疎通確認を行う
+- [x] DIAG-005 Impl `status`コマンドを実装する
+- [x] DIAG-006 Impl WSL判定、interop確認、子実行ファイル確認を実装する
+- [x] DIAG-007 Impl Windows側`--check`呼び出しを実装する
+- [x] DIAG-008 Impl `doctor --json`を実装する
+- [x] DIAG-009 Impl `--ssh-agent`指定時だけSSH Agent疎通確認を行う
 
 #### Refactor
 
-- [ ] DIAG-010 Refactor 診断項目を独立したCheckerとして追加可能にする
-- [ ] DIAG-011 Contract JSONフィールド名と終了コード9を固定する
-- [ ] DIAG-012 Docs READMEへ診断結果の読み方を追加する
+- [x] DIAG-010 Refactor 診断項目を独立したCheckerとして追加可能にする
+- [x] DIAG-011 Contract JSONフィールド名と終了コード9を固定する
+- [x] DIAG-012 Docs READMEへ診断結果の読み方を追加する
 
 ### Phase 9 WindowsとWSLのE2E検証
 
-- [ ] E2E-001 VERIFY Windows版とLinux版を同じcommitからビルドする
+- [x] E2E-001 VERIFY Windows版とLinux版を同じcommitからビルドする
 - [ ] E2E-002 VERIFY WSLから`pipeferry.exe --version`を実行できる
 - [ ] E2E-003 VERIFY テスト用Named Pipeサーバーと任意バイナリを双方向転送する
 - [ ] E2E-004 VERIFY Windows OpenSSH Agentで`ssh-add -l`が成功する
@@ -980,16 +980,16 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 
 ### Phase 10 CI、リリース、ドキュメント
 
-- [ ] REL-001 CI Linuxで`go test -race ./...`と`go vet ./...`を実行する
-- [ ] REL-002 CI Windowsで`go test ./...`とNamed Pipe統合テストを実行する
-- [ ] REL-003 CI Linux amd64とWindows amd64のビルドを検証する
-- [ ] REL-004 Release タグから両OSの成果物とSHA-256 checksumを生成する
-- [ ] REL-005 Release ldflagsでversion、commit、build dateを埋め込む
-- [ ] REL-006 Docs READMEのコマンド例を実装済みCLIへ合わせる
-- [ ] REL-007 Docs `docs/troubleshooting.md`へinterop、PATH、Named Pipe、stale socketの調査方法を追加する
-- [ ] REL-008 Docs 要求仕様と計画書のチェックボックスを最終状態へ更新する
-- [ ] REL-009 Security `govulncheck ./...`を実行し結果を記録する
-- [ ] REL-010 Quality 不要なdebugログ、payload dump、実験コードを削除する
+- [x] REL-001 CI Linuxで`go test -race ./...`と`go vet ./...`を実行する
+- [x] REL-002 CI Windowsで`go test ./...`とNamed Pipe統合テストを実行する
+- [x] REL-003 CI Linux amd64とWindows amd64のビルドを検証する
+- [x] REL-004 Release タグから両OSの成果物とSHA-256 checksumを生成する
+- [x] REL-005 Release ldflagsでversion、commit、build dateを埋め込む
+- [x] REL-006 Docs READMEのコマンド例を実装済みCLIへ合わせる
+- [x] REL-007 Docs `docs/troubleshooting.md`へinterop、PATH、Named Pipe、stale socketの調査方法を追加する
+- [x] REL-008 Docs 要求仕様と計画書のチェックボックスを最終状態へ更新する
+- [x] REL-009 Security `govulncheck ./...`を実行し結果を記録する
+- [x] REL-010 Quality 不要なdebugログ、payload dump、実験コードを削除する
 
 ## 8. 完了の定義 Definition of Done
 
@@ -1002,21 +1002,21 @@ OS非依存ロジックを実物I Oから切り離してテストする。
 - [ ] Windows OpenSSH Agentで鍵一覧、公開鍵取得、SSH署名が成功する
 - [ ] Named Pipe障害が接続単位に分離される
 - [ ] SIGTERMで全資源を回収できる
-- [ ] 受け入れ条件と既知の制約がREADMEと要求仕様へ反映されている
+- [x] 受け入れ条件と既知の制約がREADMEと要求仕様へ反映されている
 
 ### 8.2 品質DoD Quality DoD
 
 - [ ] LinuxとWindowsの全テストがパスしている
 - [ ] Linuxのrace detectorがパスしている
-- [ ] `go vet ./...`がパスしている
-- [ ] `gofmt -w`後に差分がない
-- [ ] `govulncheck ./...`で未評価の重大脆弱性がない
-- [ ] stdoutへログが混入しないContractテストがパスしている
+- [x] `go vet ./...`がパスしている
+- [x] `gofmt -w`後に差分がない
+- [x] `govulncheck ./...`で未評価の重大脆弱性がない
+- [x] stdoutへログが混入しないContractテストがパスしている
 - [ ] 通常ファイルをstale socketとして削除しないContractテストがパスしている
 - [ ] 32並列と100回連続試験後に資源リークがない
 - [ ] LinuxとWindows成果物のversionが一致する
-- [ ] README、要求仕様、計画書、トラブルシューティングが実装と一致する
-- [ ] 不要なデバッグコードとpayloadログが存在しない
+- [x] README、要求仕様、計画書、トラブルシューティングが実装と一致する
+- [x] 不要なデバッグコードとpayloadログが存在しない
 
 ## 9. 懸念事項と未確定事項 Concerns and Questions
 

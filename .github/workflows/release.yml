@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            binary: pipeferry
+            archive: tar.gz
+          - goos: windows
+            goarch: amd64
+            binary: pipeferry.exe
+            archive: zip
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+          cache: true
+      - name: Build
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME}"
+          commit="${GITHUB_SHA}"
+          build_date="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          dir="pipeferry-${version}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          mkdir "$dir"
+          CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+            go build -trimpath \
+            -ldflags "-s -w -X github.com/masahide/pipeferry/internal/buildinfo.Version=${version} -X github.com/masahide/pipeferry/internal/buildinfo.Commit=${commit} -X github.com/masahide/pipeferry/internal/buildinfo.BuildDate=${build_date}" \
+            -o "$dir/${{ matrix.binary }}" ./cmd/pipeferry
+          cp README.md LICENSE "$dir/"
+          if [[ "${{ matrix.archive }}" == "zip" ]]; then
+            zip -r "${dir}.zip" "$dir"
+            sha256sum "${dir}.zip" > "${dir}.zip.sha256"
+          else
+            tar -czf "${dir}.tar.gz" "$dir"
+            sha256sum "${dir}.tar.gz" > "${dir}.tar.gz.sha256"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pipeferry-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: |
+            *.zip
+            *.zip.sha256
+            *.tar.gz
+            *.tar.gz.sha256
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
