@@ -30,10 +30,9 @@ curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/install.sh 
 The installer verifies the Linux release archive with its published SHA-256
 checksum and installs `pipeferry` to `~/.local/bin`. On WSL2 it then invokes the
 Windows installer through PowerShell, verifies the Windows archive, installs
-`pipeferry.exe` to
-`%LOCALAPPDATA%\Programs\pipeferry`, and adds that directory to the Windows user
-`PATH`. Start a new Windows terminal after installation to use the updated
-`PATH`.
+`pipeferry.exe` to `%LOCALAPPDATA%\Programs\pipeferry`, and records its WSL path
+in `~/.config/pipeferry/windows-executable`. The Linux command uses this setting
+to resolve `pipeferry.exe`; no Windows `PATH` change or WSL restart is required.
 
 ## Uninstall
 
@@ -43,8 +42,9 @@ Run this one-liner in WSL2:
 curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/uninstall.sh | sh
 ```
 
-The uninstaller removes both the Linux and Windows binaries and removes the
-Windows installation directory from the Windows user `PATH`.
+The uninstaller removes both binaries and the recorded Windows executable
+setting. It also removes the Windows user `PATH` entry created by Pipeferry
+versions before `v0.1.1`.
 
 ## Use Windows OpenSSH Agent from WSL
 

@@ -3,6 +3,7 @@ set -eu
 
 REPOSITORY="${PIPEFERRY_REPOSITORY:-masahide/pipeferry}"
 INSTALL_DIR="${PIPEFERRY_INSTALL_DIR:-$HOME/.local/bin}"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry"
 BINARY="$INSTALL_DIR/pipeferry"
 
 if [ -e "$BINARY" ] || [ -L "$BINARY" ]; then
@@ -10,6 +11,14 @@ if [ -e "$BINARY" ] || [ -L "$BINARY" ]; then
   echo "Removed Linux binary: $BINARY"
 else
   echo "Linux binary is not installed: $BINARY"
+fi
+
+if [ -f "$CONFIG_DIR/windows-executable" ]; then
+  rm -f "$CONFIG_DIR/windows-executable"
+  echo "Removed Windows binary config: $CONFIG_DIR/windows-executable"
+fi
+if [ -d "$CONFIG_DIR" ]; then
+  rmdir "$CONFIG_DIR" 2>/dev/null || true
 fi
 
 if [ "${PIPEFERRY_SKIP_WINDOWS_UNINSTALL:-0}" = "1" ]; then

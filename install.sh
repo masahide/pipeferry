@@ -3,6 +3,7 @@ set -eu
 
 REPOSITORY="${PIPEFERRY_REPOSITORY:-masahide/pipeferry}"
 INSTALL_DIR="${PIPEFERRY_INSTALL_DIR:-$HOME/.local/bin}"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry"
 VERSION="${PIPEFERRY_VERSION:-latest}"
 
 case "$VERSION" in
@@ -85,4 +86,16 @@ if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
   esac
   powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command \
     "\$env:PIPEFERRY_VERSION='$VERSION'; irm '$PIPEFERRY_PS_URL' -UseBasicParsing | iex"
+
+  windows_binary_windows="$(powershell.exe -NoLogo -NoProfile -Command \
+    '[Console]::Out.Write((Join-Path $env:LOCALAPPDATA "Programs\pipeferry\pipeferry.exe"))')"
+  windows_binary="$(wslpath -u "$(printf '%s' "$windows_binary_windows" | tr -d '\r')")"
+  if [ ! -f "$windows_binary" ]; then
+    echo "pipeferry: installed Windows binary was not found: $windows_binary" >&2
+    exit 1
+  fi
+  install -d -m 0700 "$CONFIG_DIR"
+  umask 077
+  printf '%s\n' "$windows_binary" > "$CONFIG_DIR/windows-executable"
+  echo "Recorded Windows binary: $CONFIG_DIR/windows-executable"
 fi

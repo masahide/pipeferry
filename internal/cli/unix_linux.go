@@ -61,6 +61,11 @@ func runUnixListen(ctx context.Context, args []string, stderr io.Writer) error {
 	if len(child) == 0 {
 		return exitError(ExitUsage, "child command is required after --")
 	}
+	childExecutable, err := resolveChildExecutable(child[0])
+	if err != nil {
+		return &Error{Code: ExitNotFound, Err: err}
+	}
+	child[0] = childExecutable
 	if *shutdownTimeout <= 0 || *maxConnections < 1 {
 		return exitError(ExitUsage, "shutdown timeout must be positive and max connections must be at least 1")
 	}

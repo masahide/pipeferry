@@ -58,6 +58,10 @@ func runDoctor(ctx context.Context, args []string, stdout, stderr io.Writer) err
 	}
 	child := flags.Args()
 	if len(child) > 0 {
+		child = append([]string(nil), child...)
+		if resolved, err := resolveChildExecutable(child[0]); err == nil {
+			child[0] = resolved
+		}
 		checkers = append(checkers,
 			doctorCheckerFunc(func(context.Context) doctorCheck { return checkExecutable(child[0]) }),
 			doctorCheckerFunc(func(ctx context.Context) doctorCheck { return checkChild(ctx, *timeout, child) }),
@@ -127,12 +131,23 @@ func checkInterop() doctorCheck {
 		check.Error = "not running on Linux"
 		return check
 	}
-	if _, err := os.Stat("/proc/sys/fs/binfmt_misc/WSLInterop"); err != nil {
-		check.Error = err.Error()
+	candidates := []string{"cmd.exe", "/mnt/c/Windows/System32/cmd.exe"}
+	var failures []string
+	for _, candidate := range candidates {
+		path, err := exec.LookPath(candidate)
+		if err != nil {
+			failures = append(failures, err.Error())
+			continue
+		}
+		if err := exec.Command(path, "/d", "/c", "exit", "0").Run(); err != nil {
+			failures = append(failures, fmt.Sprintf("%s: %v", path, err))
+			continue
+		}
+		check.OK = true
+		check.Detail = "WSL interoperability executed " + path
 		return check
 	}
-	check.OK = true
-	check.Detail = "WSLInterop binfmt handler is available"
+	check.Error = strings.Join(failures, "; ")
 	return check
 }
 

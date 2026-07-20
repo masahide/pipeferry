@@ -54,12 +54,13 @@ try {
     Copy-Item -Force $Binary.FullName (Join-Path $InstallDir 'pipeferry.exe')
 
     $UserPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-    $PathEntries = @($UserPath -split ';' | Where-Object { $_ })
-    if ($PathEntries -notcontains $InstallDir) {
-        $NewUserPath = (($PathEntries + $InstallDir) -join ';')
+    $PathEntries = @($UserPath -split ';' | Where-Object {
+        $_ -and $_.TrimEnd('\') -ine $InstallDir.TrimEnd('\')
+    })
+    $NewUserPath = $PathEntries -join ';'
+    if ($NewUserPath -ne $UserPath) {
         [Environment]::SetEnvironmentVariable('Path', $NewUserPath, 'User')
-        $env:Path = "$env:Path;$InstallDir"
-        Write-Host "Added to the user PATH: $InstallDir"
+        Write-Host "Removed legacy user PATH entry: $InstallDir"
     }
 
     Write-Host "Installed Windows binary: $InstallDir\pipeferry.exe"

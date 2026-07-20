@@ -13,8 +13,19 @@ interop is enabled in `/etc/wsl.conf`, then restart the distribution with
 
 ## Windows executable not found
 
-Run `command -v pipeferry.exe` in WSL. Put the Windows binary on the interop PATH
-or pass its absolute `/mnt/c/.../pipeferry.exe` path after `--`.
+The WSL installer records the Windows binary path in
+`~/.config/pipeferry/windows-executable`; Windows `PATH` registration is not
+required. Check that the file contains an absolute WSL path and that the target
+exists:
+
+```bash
+cat "${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry/windows-executable"
+test -f "$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry/windows-executable")"
+```
+
+Re-run the installer to repair a missing or stale setting. An absolute
+`/mnt/c/.../pipeferry.exe` path may still be passed after `--` as a manual
+override.
 
 ## Named pipe unavailable
 

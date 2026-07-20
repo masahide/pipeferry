@@ -281,6 +281,48 @@ func TestUnixListenRequiresChildAndValidOptions(t *testing.T) {
 	}
 }
 
+func TestResolveConfiguredWindowsExecutable(t *testing.T) {
+	configHome := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", configHome)
+	t.Setenv("PATH", "")
+	configDir := filepath.Join(configHome, "pipeferry")
+	if err := os.Mkdir(configDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	windowsExecutable := filepath.Join(t.TempDir(), "pipeferry.exe")
+	if err := os.WriteFile(windowsExecutable, []byte("test"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(configDir, "windows-executable"),
+		[]byte(windowsExecutable+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	resolved, err := resolveChildExecutable("pipeferry.exe")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resolved != windowsExecutable {
+		t.Fatalf("resolved=%q want=%q", resolved, windowsExecutable)
+	}
+}
+
+func TestResolveConfiguredWindowsExecutableRejectsInvalidPath(t *testing.T) {
+	configHome := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", configHome)
+	t.Setenv("PATH", "")
+	configDir := filepath.Join(configHome, "pipeferry")
+	if err := os.Mkdir(configDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(configDir, "windows-executable"),
+		[]byte("relative/pipeferry.exe\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := resolveChildExecutable("pipeferry.exe"); err == nil {
+		t.Fatal("relative configured path was accepted")
+	}
+}
+
 func TestStatusJSONContract(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "missing.sock")
 	var stdout bytes.Buffer
