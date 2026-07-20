@@ -41,10 +41,9 @@ CI also builds Linux and Windows amd64 binaries and validates the shell and
 PowerShell installer syntax.
 
 Windows tests include a real named-pipe echo integration test. Linux tests cover
-Unix socket modes, locking, stale recovery, and regular-file safety. Full
-Windows-to-WSL validation, OpenSSH Agent signing, load, and process-leak checks
-must be completed on a Windows 11 plus WSL2 machine using
-[the E2E checklist](e2e-checklist.md).
+Unix socket modes, locking, stale recovery, regular-file safety, and systemd
+unit generation. Cross-platform behavior should also be verified on a Windows
+11 plus WSL2 machine before a release that changes stream or process handling.
 
 ## Release
 

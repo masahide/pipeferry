@@ -197,9 +197,10 @@ later connection.
 - The initial release does not provide `ensure`, `PIPEFERRY_EXEC`, system-level
   services, auto-update, TCP, or connection multiplexing.
 
-See [troubleshooting](docs/troubleshooting.md) for WSL interop, PATH, named-pipe,
-and stale-socket diagnostics. The normative initial requirements are in
+The normative initial requirements are in
 [docs/requirements/260720-pipeferry-requirements.md](docs/requirements/260720-pipeferry-requirements.md).
+The systemd user-service requirements are in
+[docs/requirements/systemd-user-services.md](docs/requirements/systemd-user-services.md).
 
 ## Development
 
