@@ -66,6 +66,7 @@ func TestStaleSocketRecoveryAndRegularFileSafety(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	keepUnixSocketAfterClose(t, old)
 	_ = old.Close()
 	listener, err := Listen(path, 0o600)
 	if err != nil {
@@ -129,6 +130,7 @@ func TestInspectMissingStaleAndRegularFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	keepUnixSocketAfterClose(t, listener)
 	_ = listener.Close()
 	stale := Inspect(stalePath)
 	if !stale.Exists || !stale.IsSocket || !stale.Stale || stale.Running {
@@ -143,4 +145,13 @@ func TestInspectMissingStaleAndRegularFile(t *testing.T) {
 	if !regular.Exists || regular.IsSocket || regular.Error == "" {
 		t.Fatalf("regular = %+v", regular)
 	}
+}
+
+func keepUnixSocketAfterClose(t *testing.T, listener net.Listener) {
+	t.Helper()
+	unixListener, ok := listener.(*net.UnixListener)
+	if !ok {
+		t.Fatalf("listener type = %T, want *net.UnixListener", listener)
+	}
+	unixListener.SetUnlinkOnClose(false)
 }

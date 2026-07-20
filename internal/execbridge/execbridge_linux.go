@@ -74,7 +74,10 @@ func Serve(ctx context.Context, conn net.Conn, config Config, factory ProcessFac
 	}()
 
 	childStream := childReadWriter{Reader: stdout, Writer: stdin}
-	copyResult := streamcopy.Duplex(childCtx, conn, childStream, func() {
+	// Duplex must observe only caller cancellation. The close callback also
+	// cancels childCtx to reap the child, so passing childCtx to Duplex would
+	// misclassify every normal EOF as context.Canceled.
+	copyResult := streamcopy.Duplex(ctx, conn, childStream, func() {
 		_ = conn.Close()
 		_ = stdin.Close()
 		cancel()
@@ -104,7 +107,7 @@ func Serve(ctx context.Context, conn net.Conn, config Config, factory ProcessFac
 }
 
 func expectedExit(err error, parent context.Context) bool {
-	if err == nil || parent.Err() != nil {
+	if err == nil || parent.Err() != nil || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 		return true
 	}
 	var exitErr *exec.ExitError

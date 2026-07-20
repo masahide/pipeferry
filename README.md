@@ -19,6 +19,33 @@ local to one connection, and Pipeferry never interprets or logs payload bytes.
 
 The initial release targets Windows 11 x86-64 and Ubuntu x86-64 on WSL2.
 
+## Install
+
+Run this command in WSL2:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/install.sh | sh
+```
+
+The installer verifies the Linux release archive with its published SHA-256
+checksum and installs `pipeferry` to `~/.local/bin`. On WSL2 it then invokes the
+Windows installer through PowerShell (`irm ... | iex`), verifies the Windows
+archive, installs `pipeferry.exe` to
+`%LOCALAPPDATA%\Programs\pipeferry`, and adds that directory to the Windows user
+`PATH`. Start a new Windows terminal after installation to use the updated
+`PATH`.
+
+To install only the Windows binary, run this in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/masahide/pipeferry/main/install.ps1 | iex
+```
+
+Set `PIPEFERRY_SKIP_WINDOWS_INSTALL=1` before running the WSL installer to skip
+the Windows step. Advanced users can select a tag with `PIPEFERRY_VERSION=v1.2.3`
+or override the install directories with `PIPEFERRY_INSTALL_DIR` and
+`PIPEFERRY_WINDOWS_INSTALL_DIR`.
+
 ## Build
 
 Pipeferry requires Go 1.25 or newer.
@@ -31,7 +58,9 @@ CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
   go build -o pipeferry.exe ./cmd/pipeferry
 ```
 
-Tagged releases produce archives and SHA-256 checksum files for both targets.
+Pushing a `v*` tag builds Linux and Windows amd64 archives, publishes stable
+asset names and SHA-256 checksum files, and attaches both installers to the
+GitHub Release.
 
 ## Use Windows OpenSSH Agent from WSL
 
@@ -165,7 +194,7 @@ later connection.
 - Do not combine `npipe-connect` standard error with standard output.
 - One Windows process is launched per Unix connection.
 - The initial release does not provide `ensure`, `PIPEFERRY_EXEC`, services,
-  installers, auto-update, TCP, or connection multiplexing.
+  auto-update, TCP, or connection multiplexing.
 
 See [troubleshooting](docs/troubleshooting.md) for WSL interop, PATH, named-pipe,
 and stale-socket diagnostics. The normative initial requirements are in

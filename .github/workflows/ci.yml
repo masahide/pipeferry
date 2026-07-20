@@ -20,6 +20,7 @@ jobs:
       - run: go test -race ./...
       - run: go vet ./...
       - run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/pipeferry ./cmd/pipeferry
+      - run: sh -n install.sh
 
   windows:
     runs-on: windows-latest
@@ -32,6 +33,9 @@ jobs:
       - run: go test ./...
       - run: go vet ./...
       - run: go build -o "$env:RUNNER_TEMP\pipeferry.exe" ./cmd/pipeferry
+      - shell: powershell
+        run: |
+          [void][scriptblock]::Create((Get-Content -Raw ./install.ps1))
 
   cross-build:
     runs-on: ubuntu-latest
