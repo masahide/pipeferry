@@ -21,7 +21,7 @@ The initial release targets Windows 11 x86-64 and Ubuntu x86-64 on WSL2.
 
 ## Install
 
-Run this command in WSL2:
+Run this one-liner in WSL2:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/install.sh | sh
@@ -29,38 +29,11 @@ curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/install.sh 
 
 The installer verifies the Linux release archive with its published SHA-256
 checksum and installs `pipeferry` to `~/.local/bin`. On WSL2 it then invokes the
-Windows installer through PowerShell (`irm ... | iex`), verifies the Windows
-archive, installs `pipeferry.exe` to
+Windows installer through PowerShell, verifies the Windows archive, installs
+`pipeferry.exe` to
 `%LOCALAPPDATA%\Programs\pipeferry`, and adds that directory to the Windows user
 `PATH`. Start a new Windows terminal after installation to use the updated
 `PATH`.
-
-To install only the Windows binary, run this in PowerShell:
-
-```powershell
-irm https://raw.githubusercontent.com/masahide/pipeferry/main/install.ps1 | iex
-```
-
-Set `PIPEFERRY_SKIP_WINDOWS_INSTALL=1` before running the WSL installer to skip
-the Windows step. Advanced users can select a tag with `PIPEFERRY_VERSION=v1.2.3`
-or override the install directories with `PIPEFERRY_INSTALL_DIR` and
-`PIPEFERRY_WINDOWS_INSTALL_DIR`.
-
-## Build
-
-Pipeferry requires Go 1.25 or newer.
-
-```bash
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-  go build -o pipeferry ./cmd/pipeferry
-
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
-  go build -o pipeferry.exe ./cmd/pipeferry
-```
-
-Pushing a `v*` tag builds Linux and Windows amd64 archives, publishes stable
-asset names and SHA-256 checksum files, and attaches both installers to the
-GitHub Release.
 
 ## Use Windows OpenSSH Agent from WSL
 
@@ -200,19 +173,10 @@ See [troubleshooting](docs/troubleshooting.md) for WSL interop, PATH, named-pipe
 and stale-socket diagnostics. The normative initial requirements are in
 [docs/requirements/260720-pipeferry-requirements.md](docs/requirements/260720-pipeferry-requirements.md).
 
-## Development and verification
+## Development
 
-```bash
-go test ./...
-go vet ./...
-go test -race ./...
-```
-
-Windows tests include a real named-pipe echo integration test. Linux tests cover
-Unix socket modes, locking, stale recovery, and regular-file safety. Full
-Windows-to-WSL validation, OpenSSH Agent signing, load, and process-leak checks
-must be completed on a Windows 11 plus WSL2 machine using
-[docs/e2e-checklist.md](docs/e2e-checklist.md).
+Build, test, release, and contributor verification instructions are in
+[docs/development.md](docs/development.md).
 
 ## License
 
