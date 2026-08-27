@@ -67,25 +67,9 @@ if [ -d "$CONFIG_DIR" ]; then
   rmdir "$CONFIG_DIR" 2>/dev/null || true
 fi
 
-if [ "${PIPEFERRY_SKIP_WINDOWS_UNINSTALL:-0}" = "1" ]; then
-  exit 0
-fi
-
 if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
-  if ! command -v powershell.exe >/dev/null 2>&1; then
-    echo "pipeferry: WSL was detected, but powershell.exe is unavailable" >&2
-    exit 1
-  fi
-
-  PIPEFERRY_PS_URL="${PIPEFERRY_POWERSHELL_UNINSTALLER_URL:-https://raw.githubusercontent.com/$REPOSITORY/main/uninstall.ps1}"
-  case "$PIPEFERRY_PS_URL" in
-    *"'"*)
-      echo "pipeferry: invalid PowerShell uninstaller URL" >&2
-      exit 1
-      ;;
-  esac
-
-  echo "Uninstalling pipeferry.exe from Windows..."
-  powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command \
-    "iex (irm '$PIPEFERRY_PS_URL' -UseBasicParsing)"
+  echo
+  echo "The WSL uninstaller does not remove the Windows binary."
+  echo "To remove it, run this command in Windows PowerShell:"
+  echo "  irm https://raw.githubusercontent.com/$REPOSITORY/main/uninstall.ps1 | iex"
 fi

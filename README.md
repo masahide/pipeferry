@@ -23,36 +23,47 @@ The initial release targets Windows 11 x86-64 and Ubuntu x86-64 on WSL2.
 
 To use the Windows OpenSSH Agent from WSL, follow the dedicated
 [OpenSSH Agent installation manual](docs/openssh-agent.md). It provides a
-separate one-line installer that installs Pipeferry, registers and starts the
-systemd user service, and prepares the shell environment files.
+dedicated installation flow, including one-line commands for Windows and WSL,
+that registers and starts the systemd user service and prepares the shell
+environment files.
 
-For protocol-independent use, run the generic installer below.
+Pipeferry has separate installers for native Windows and Linux/WSL. The
+Windows installer must be run from Windows PowerShell; the Linux installer
+does not invoke PowerShell or install the Windows binary.
 
-Run this one-liner in WSL2:
+Run this one-liner in Windows PowerShell to install the Windows binary:
+
+```powershell
+irm https://raw.githubusercontent.com/masahide/pipeferry/main/install.ps1 | iex
+```
+
+For Linux or WSL2, run this one-liner:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/install.sh | sh
 ```
 
-The installer verifies the Linux release archive with its published SHA-256
-checksum and installs `pipeferry` to `~/.local/bin`. On WSL2 it then invokes the
-Windows installer through PowerShell, verifies the Windows archive, installs
-`pipeferry.exe` to `%LOCALAPPDATA%\Programs\pipeferry`, and records its WSL path
-in `~/.config/pipeferry/windows-executable`. The Linux command uses this setting
-to resolve `pipeferry.exe`; no Windows `PATH` change or WSL restart is required.
+The Linux installer verifies the Linux release archive with its published
+SHA-256 checksum and installs `pipeferry` to `~/.local/bin`. It does not install
+or remove `pipeferry.exe` on Windows.
 
 ## Uninstall
 
-Run this one-liner in WSL2:
+Run this one-liner in WSL2 to remove the Linux installation:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/masahide/pipeferry/main/uninstall.sh | sh
 ```
 
-The common uninstaller first stops and removes every Pipeferry-managed systemd
-user service. It then removes integration environment files, both binaries, and
-the recorded Windows executable setting. It also removes the Windows user
-`PATH` entry created by Pipeferry versions before `v0.1.1`.
+The WSL uninstaller first stops and removes every Pipeferry-managed systemd user
+service. It then removes integration environment files, the Linux binary, and
+the recorded Windows executable setting. It does not remove the Windows binary.
+
+To remove the Windows binary, run this one-liner in Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/masahide/pipeferry/main/uninstall.ps1 | iex
+```
 
 The child command is an argument array after `--`. It is not parsed by a shell.
 A full pipe path is also accepted:

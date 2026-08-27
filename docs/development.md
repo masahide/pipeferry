@@ -68,10 +68,11 @@ following stable asset names with SHA-256 checksum files:
 - `uninstall.ps1`
 
 The stable archive names are part of the installer contract. Do not rename them
-without updating both installers.
+without updating the installers.
 
-On WSL, `install.sh` records the installed Windows executable as an absolute WSL
-path in `${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry/windows-executable`.
+On WSL, `install-ssh-agent.sh` records the preinstalled Windows executable as an
+absolute WSL path in `${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry/windows-executable`.
 `unix-listen` and `doctor` resolve the exact child name `pipeferry.exe` through
-this setting when it is not available on `PATH`. The Windows installer must not
-add its installation directory to the Windows user `PATH`.
+this setting when it is not available on `PATH`. The generic `install.sh` does
+not invoke PowerShell or install the Windows binary. The Windows installer must
+not add its installation directory to the Windows user `PATH`.
