@@ -85,7 +85,7 @@ if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
       ;;
   esac
   powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command \
-    "\$env:PIPEFERRY_VERSION='$VERSION'; irm '$PIPEFERRY_PS_URL' -UseBasicParsing | iex"
+    "\$env:PIPEFERRY_VERSION='$VERSION'; iex (irm '$PIPEFERRY_PS_URL' -UseBasicParsing)"
 
   windows_binary_windows="$(powershell.exe -NoLogo -NoProfile -Command \
     '[Console]::Out.Write((Join-Path $env:LOCALAPPDATA "Programs\pipeferry\pipeferry.exe"))')"

@@ -87,5 +87,5 @@ if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
 
   echo "Uninstalling pipeferry.exe from Windows..."
   powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command \
-    "irm '$PIPEFERRY_PS_URL' -UseBasicParsing | iex"
+    "iex (irm '$PIPEFERRY_PS_URL' -UseBasicParsing)"
 fi
