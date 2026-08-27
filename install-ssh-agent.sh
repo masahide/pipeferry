@@ -16,6 +16,48 @@ if ! command -v curl >/dev/null 2>&1; then
   exit 1
 fi
 
+windows_binary="${PIPEFERRY_WINDOWS_EXECUTABLE:-}"
+if [ -z "$windows_binary" ] && [ -f "$CONFIG_DIR/windows-executable" ]; then
+  configured_windows_binary="$(sed -n '1p' "$CONFIG_DIR/windows-executable")"
+  if [ -f "$configured_windows_binary" ]; then
+    windows_binary="$configured_windows_binary"
+  fi
+fi
+if [ -z "$windows_binary" ] && command -v pipeferry.exe >/dev/null 2>&1; then
+  windows_binary="$(command -v pipeferry.exe)"
+fi
+if [ -z "$windows_binary" ]; then
+  for candidate in /mnt/*/Users/*/AppData/Local/Programs/pipeferry/pipeferry.exe; do
+    if [ ! -f "$candidate" ]; then
+      continue
+    fi
+    if [ -n "$windows_binary" ]; then
+      echo "pipeferry: multiple Windows binaries found; set PIPEFERRY_WINDOWS_EXECUTABLE" >&2
+      exit 1
+    fi
+    windows_binary="$candidate"
+  done
+fi
+
+if [ -z "$windows_binary" ]; then
+  echo "pipeferry: Windows binary was not found" >&2
+  echo "Install pipeferry.exe from Windows PowerShell first:" >&2
+  echo "  irm https://raw.githubusercontent.com/$REPOSITORY/main/install.ps1 | iex" >&2
+  echo "For a custom install path, set PIPEFERRY_WINDOWS_EXECUTABLE to its absolute WSL path." >&2
+  exit 1
+fi
+case "$windows_binary" in
+  /*) ;;
+  *)
+    echo "pipeferry: Windows executable path must be absolute: $windows_binary" >&2
+    exit 1
+    ;;
+esac
+if [ ! -f "$windows_binary" ]; then
+  echo "pipeferry: Windows binary was not found: $windows_binary" >&2
+  exit 1
+fi
+
 tmp_dir="$(mktemp -d)"
 shell_tmp=""
 fish_tmp=""
@@ -46,16 +88,19 @@ if [ ! -x "$PIPEFERRY" ]; then
 fi
 
 echo "Installing Pipeferry OpenSSH Agent service..."
+echo "Using Windows binary: $windows_binary"
 "$PIPEFERRY" service install \
   --name ssh-agent \
   --socket-name ssh-agent.sock \
   -- \
-  pipeferry.exe npipe-connect \
+  "$windows_binary" npipe-connect \
     --pipe openssh-ssh-agent \
     --connect-timeout 5s
 
 install -d -m 0700 "$CONFIG_DIR"
 umask 077
+printf '%s\n' "$windows_binary" > "$CONFIG_DIR/windows-executable"
+echo "Recorded Windows binary: $CONFIG_DIR/windows-executable"
 
 shell_tmp="$(mktemp "$CONFIG_DIR/.ssh-agent.sh.XXXXXX")"
 cat > "$shell_tmp" <<'EOF'

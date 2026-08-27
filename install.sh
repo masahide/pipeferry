@@ -3,7 +3,6 @@ set -eu
 
 REPOSITORY="${PIPEFERRY_REPOSITORY:-masahide/pipeferry}"
 INSTALL_DIR="${PIPEFERRY_INSTALL_DIR:-$HOME/.local/bin}"
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pipeferry"
 VERSION="${PIPEFERRY_VERSION:-latest}"
 
 case "$VERSION" in
@@ -66,36 +65,4 @@ case ":$PATH:" in
     ;;
 esac
 
-if [ "${PIPEFERRY_SKIP_WINDOWS_INSTALL:-0}" = "1" ]; then
-  exit 0
-fi
-
-if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
-  if ! command -v powershell.exe >/dev/null 2>&1; then
-    echo "pipeferry: WSL was detected, but powershell.exe is unavailable" >&2
-    exit 1
-  fi
-
-  echo "Installing pipeferry.exe on Windows..."
-  PIPEFERRY_PS_URL="${PIPEFERRY_POWERSHELL_INSTALLER_URL:-https://raw.githubusercontent.com/$REPOSITORY/main/install.ps1}"
-  case "$PIPEFERRY_PS_URL" in
-    *"'"*)
-      echo "pipeferry: invalid PowerShell installer URL" >&2
-      exit 1
-      ;;
-  esac
-  powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command \
-    "\$env:PIPEFERRY_VERSION='$VERSION'; iex (irm '$PIPEFERRY_PS_URL' -UseBasicParsing)"
-
-  windows_binary_windows="$(powershell.exe -NoLogo -NoProfile -Command \
-    '[Console]::Out.Write((Join-Path $env:LOCALAPPDATA "Programs\pipeferry\pipeferry.exe"))')"
-  windows_binary="$(wslpath -u "$(printf '%s' "$windows_binary_windows" | tr -d '\r')")"
-  if [ ! -f "$windows_binary" ]; then
-    echo "pipeferry: installed Windows binary was not found: $windows_binary" >&2
-    exit 1
-  fi
-  install -d -m 0700 "$CONFIG_DIR"
-  umask 077
-  printf '%s\n' "$windows_binary" > "$CONFIG_DIR/windows-executable"
-  echo "Recorded Windows binary: $CONFIG_DIR/windows-executable"
-fi
+exit 0
